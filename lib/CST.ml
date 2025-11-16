@@ -12,6 +12,8 @@ type comment = Token.t
 
 type ws = Token.t
 
+type tok_prec_p100_dotdotdotgt = Token.t
+
 type auto_res_mark = Token.t
 
 type char_lit = Token.t
@@ -19,6 +21,8 @@ type char_lit = Token.t
 type tok_pat_0a702c4_rep_choice_pat_0a702c4 = Token.t
 
 type str_lit = Token.t
+
+type tok_prec_p100_ltdotdotdot = Token.t
 
 type nil_lit = Token.t
 
@@ -50,7 +54,14 @@ and bare_set_lit = (
 and bare_vec_lit = (Token.t (* "[" *) * source * Token.t (* "]" *))
 
 and form = [
-    `Num_lit of num_lit (*tok*)
+    `Semg_deep_exp of (
+        tok_prec_p100_ltdotdotdot (*tok*)
+      * gap list (* zero or more *)
+      * form
+      * gap list (* zero or more *)
+      * tok_prec_p100_dotdotdotgt (*tok*)
+    )
+  | `Num_lit of num_lit (*tok*)
   | `Kwd_lit of kwd_lit (*tok*)
   | `Str_lit of str_lit (*tok*)
   | `Char_lit of char_lit (*tok*)
@@ -237,6 +248,14 @@ type quoting_lit (* inlined *) = (
   * Token.t (* "'" *)
   * gap list (* zero or more *)
   * form
+)
+
+type semgrep_deep_expression (* inlined *) = (
+    tok_prec_p100_ltdotdotdot (*tok*)
+  * gap list (* zero or more *)
+  * form
+  * gap list (* zero or more *)
+  * tok_prec_p100_dotdotdotgt (*tok*)
 )
 
 type set_lit (* inlined *) = (

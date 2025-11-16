@@ -25,6 +25,9 @@ let map_comment (env : env) (tok : CST.comment) =
 let map_ws (env : env) (tok : CST.ws) =
   (* ws *) token env tok
 
+let map_tok_prec_p100_dotdotdotgt (env : env) (tok : CST.tok_prec_p100_dotdotdotgt) =
+  (* tok_prec_p100_dotdotdotgt *) token env tok
+
 let map_auto_res_mark (env : env) (tok : CST.auto_res_mark) =
   (* auto_res_mark *) token env tok
 
@@ -36,6 +39,9 @@ let map_tok_pat_0a702c4_rep_choice_pat_0a702c4 (env : env) (tok : CST.tok_pat_0a
 
 let map_str_lit (env : env) (tok : CST.str_lit) =
   (* str_lit *) token env tok
+
+let map_tok_prec_p100_ltdotdotdot (env : env) (tok : CST.tok_prec_p100_ltdotdotdot) =
+  (* tok_prec_p100_ltdotdotdot *) token env tok
 
 let map_nil_lit (env : env) (tok : CST.nil_lit) =
   (* nil_lit *) token env tok
@@ -98,6 +104,14 @@ and map_bare_vec_lit (env : env) ((v1, v2, v3) : CST.bare_vec_lit) =
 
 and map_form (env : env) (x : CST.form) =
   (match x with
+  | `Semg_deep_exp (v1, v2, v3, v4, v5) -> R.Case ("Semg_deep_exp",
+      let v1 = map_tok_prec_p100_ltdotdotdot env v1 in
+      let v2 = R.List (List.map (map_gap env) v2) in
+      let v3 = map_form env v3 in
+      let v4 = R.List (List.map (map_gap env) v4) in
+      let v5 = map_tok_prec_p100_dotdotdotgt env v5 in
+      R.Tuple [v1; v2; v3; v4; v5]
+    )
   | `Num_lit tok -> R.Case ("Num_lit",
       (* num_lit *) token env tok
     )
