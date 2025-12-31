@@ -42,12 +42,14 @@ let extras = [
 
 let children_regexps : (string * Run.exp option) list = [
   "comment", None;
+  "tok_prec_p100_ltdotdotdot", None;
+  "ws", None;
   "tok_pat_0a702c4_rep_choice_pat_0a702c4", None;
   "auto_res_mark", None;
   "char_lit", None;
   "tok_dquot_rep_pat_0d044a8_rep_bslash_pat_5058f1a_rep_pat_0d044a8_dquot",
   None;
-  "ws", None;
+  "tok_prec_p100_dotdotdotgt", None;
   "nil_lit", None;
   "kwd_lit", None;
   "str_lit", None;
@@ -166,6 +168,7 @@ let children_regexps : (string * Run.exp option) list = [
   "form",
   Some (
     Alt [|
+      Token (Name "semgrep_deep_expression");
       Token (Name "num_lit");
       Token (Name "kwd_lit");
       Token (Name "str_lit");
@@ -308,6 +311,20 @@ let children_regexps : (string * Run.exp option) list = [
       Token (Name "bare_list_lit");
     ];
   );
+  "semgrep_deep_expression",
+  Some (
+    Seq [
+      Token (Name "tok_prec_p100_ltdotdotdot");
+      Repeat (
+        Token (Name "gap");
+      );
+      Token (Name "form");
+      Repeat (
+        Token (Name "gap");
+      );
+      Token (Name "tok_prec_p100_dotdotdotgt");
+    ];
+  );
   "set_lit",
   Some (
     Seq [
@@ -443,6 +460,16 @@ let trans_comment ((kind, body) : mt) : CST.comment =
   | Leaf v -> v
   | Children _ -> assert false
 
+let trans_tok_prec_p100_ltdotdotdot ((kind, body) : mt) : CST.tok_prec_p100_ltdotdotdot =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
+let trans_ws ((kind, body) : mt) : CST.ws =
+  match body with
+  | Leaf v -> v
+  | Children _ -> assert false
+
 let trans_tok_pat_0a702c4_rep_choice_pat_0a702c4 ((kind, body) : mt) : CST.tok_pat_0a702c4_rep_choice_pat_0a702c4 =
   match body with
   | Leaf v -> v
@@ -463,7 +490,7 @@ let trans_tok_dquot_rep_pat_0d044a8_rep_bslash_pat_5058f1a_rep_pat_0d044a8_dquot
   | Leaf v -> v
   | Children _ -> assert false
 
-let trans_ws ((kind, body) : mt) : CST.ws =
+let trans_tok_prec_p100_dotdotdotgt ((kind, body) : mt) : CST.tok_prec_p100_dotdotdotgt =
   match body with
   | Leaf v -> v
   | Children _ -> assert false
@@ -718,102 +745,106 @@ and trans_form ((kind, body) : mt) : CST.form =
   | Children v ->
       (match v with
       | Alt (0, v) ->
+          `Semg_deep_exp (
+            trans_semgrep_deep_expression (Run.matcher_token v)
+          )
+      | Alt (1, v) ->
           `Num_lit (
             trans_num_lit (Run.matcher_token v)
           )
-      | Alt (1, v) ->
+      | Alt (2, v) ->
           `Kwd_lit (
             trans_kwd_lit (Run.matcher_token v)
           )
-      | Alt (2, v) ->
+      | Alt (3, v) ->
           `Str_lit (
             trans_str_lit (Run.matcher_token v)
           )
-      | Alt (3, v) ->
+      | Alt (4, v) ->
           `Char_lit (
             trans_char_lit (Run.matcher_token v)
           )
-      | Alt (4, v) ->
+      | Alt (5, v) ->
           `Nil_lit (
             trans_nil_lit (Run.matcher_token v)
           )
-      | Alt (5, v) ->
+      | Alt (6, v) ->
           `Bool_lit (
             trans_bool_lit (Run.matcher_token v)
           )
-      | Alt (6, v) ->
+      | Alt (7, v) ->
           `Sym_lit (
             trans_sym_lit (Run.matcher_token v)
           )
-      | Alt (7, v) ->
+      | Alt (8, v) ->
           `List_lit (
             trans_list_lit (Run.matcher_token v)
           )
-      | Alt (8, v) ->
+      | Alt (9, v) ->
           `Map_lit (
             trans_map_lit (Run.matcher_token v)
           )
-      | Alt (9, v) ->
+      | Alt (10, v) ->
           `Vec_lit (
             trans_vec_lit (Run.matcher_token v)
           )
-      | Alt (10, v) ->
+      | Alt (11, v) ->
           `Set_lit (
             trans_set_lit (Run.matcher_token v)
           )
-      | Alt (11, v) ->
+      | Alt (12, v) ->
           `Anon_fn_lit (
             trans_anon_fn_lit (Run.matcher_token v)
           )
-      | Alt (12, v) ->
+      | Alt (13, v) ->
           `Regex_lit (
             trans_regex_lit (Run.matcher_token v)
           )
-      | Alt (13, v) ->
+      | Alt (14, v) ->
           `Read_cond_lit (
             trans_read_cond_lit (Run.matcher_token v)
           )
-      | Alt (14, v) ->
+      | Alt (15, v) ->
           `Spli_read_cond_lit (
             trans_splicing_read_cond_lit (Run.matcher_token v)
           )
-      | Alt (15, v) ->
+      | Alt (16, v) ->
           `Ns_map_lit (
             trans_ns_map_lit (Run.matcher_token v)
           )
-      | Alt (16, v) ->
+      | Alt (17, v) ->
           `Var_quot_lit (
             trans_var_quoting_lit (Run.matcher_token v)
           )
-      | Alt (17, v) ->
+      | Alt (18, v) ->
           `Sym_val_lit (
             trans_sym_val_lit (Run.matcher_token v)
           )
-      | Alt (18, v) ->
+      | Alt (19, v) ->
           `Eval_lit (
             trans_evaling_lit (Run.matcher_token v)
           )
-      | Alt (19, v) ->
+      | Alt (20, v) ->
           `Tagged_or_ctor_lit (
             trans_tagged_or_ctor_lit (Run.matcher_token v)
           )
-      | Alt (20, v) ->
+      | Alt (21, v) ->
           `Dere_lit (
             trans_derefing_lit (Run.matcher_token v)
           )
-      | Alt (21, v) ->
+      | Alt (22, v) ->
           `Quot_lit (
             trans_quoting_lit (Run.matcher_token v)
           )
-      | Alt (22, v) ->
+      | Alt (23, v) ->
           `Syn_quot_lit (
             trans_syn_quoting_lit (Run.matcher_token v)
           )
-      | Alt (23, v) ->
+      | Alt (24, v) ->
           `Unqu_spli_lit (
             trans_unquote_splicing_lit (Run.matcher_token v)
           )
-      | Alt (24, v) ->
+      | Alt (25, v) ->
           `Unqu_lit (
             trans_unquoting_lit (Run.matcher_token v)
           )
@@ -1051,6 +1082,28 @@ and trans_read_cond_lit ((kind, body) : mt) : CST.read_cond_lit =
               v2
             ,
             trans_bare_list_lit (Run.matcher_token v3)
+          )
+      | _ -> assert false
+      )
+  | Leaf _ -> assert false
+
+and trans_semgrep_deep_expression ((kind, body) : mt) : CST.semgrep_deep_expression =
+  match body with
+  | Children v ->
+      (match v with
+      | Seq [v0; v1; v2; v3; v4] ->
+          (
+            trans_tok_prec_p100_ltdotdotdot (Run.matcher_token v0),
+            Run.repeat
+              (fun v -> trans_gap (Run.matcher_token v))
+              v1
+            ,
+            trans_form (Run.matcher_token v2),
+            Run.repeat
+              (fun v -> trans_gap (Run.matcher_token v))
+              v3
+            ,
+            trans_tok_prec_p100_dotdotdotgt (Run.matcher_token v4)
           )
       | _ -> assert false
       )

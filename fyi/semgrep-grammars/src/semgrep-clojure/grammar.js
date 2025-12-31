@@ -17,6 +17,20 @@ module.exports = grammar(base_grammar, {
      if they're not already part of the base grammar.
   */
   rules: {
+    semgrep_deep_expression: $ => seq(
+      token(prec(100, '<...')),
+      repeat($._gap),
+      $._form,
+      repeat($._gap),
+      token(prec(100, '...>'))
+    ),
+
+    _form: ($, previous) => choice(
+      $.semgrep_deep_expression,
+      ...previous.members
+    ),
+
+
   /*
     semgrep_ellipsis: $ => '...',
 
